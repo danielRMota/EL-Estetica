@@ -1,0 +1,6 @@
+# Dados das pacientes e senha do painel: nunca publicar em repositório
+dados/
+node_modules/
+admin/
+Abrir o painel.bat
+Abrir o site.bat
