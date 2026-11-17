@@ -46,6 +46,13 @@
   );
   document.querySelectorAll('[data-revelar]').forEach((no) => revelar.observe(no));
 
+  // Partes com animação sem fim (faixa, logo, estrela) param quando saem da tela,
+  // para não gastar o processador do celular à toa.
+  const pausarFora = new IntersectionObserver((entradas) => {
+    for (const entrada of entradas) entrada.target.classList.toggle('fora-da-tela', !entrada.isIntersecting);
+  });
+  document.querySelectorAll('.abertura, .faixa, .convite').forEach((parte) => pausarFora.observe(parte));
+
   const passos = $('passos');
   [...passos.children].forEach((li, i) => (li.style.transitionDelay = `${0.2 + i * 0.18}s`));
   revelar.observe(passos);
@@ -518,13 +525,26 @@
     return p;
   }
 
+  // Quando o site está numa hospedagem sem a agenda (como o GitHub Pages), o endereço
+  // da agenda não existe: o site percebe isso e para de perguntar.
+  let semServidor = false;
+  let falhas = 0;
+
   async function carregar() {
+    if (semServidor) return false;
     try {
       const resposta = await fetch('/api/agenda', { headers: { Accept: 'application/json' } });
+      const tipo = resposta.headers.get('content-type') || '';
+      if (resposta.status === 404 || resposta.status === 405 || !tipo.includes('application/json')) {
+        semServidor = true;
+        throw new Error('sem agenda nesta hospedagem');
+      }
       if (!resposta.ok) throw new Error('agenda indisponível');
+      falhas = 0;
       aplicarAgenda(await resposta.json());
       return true;
     } catch {
+      falhas += 1;
       if (!agenda) {
         // sem agenda nenhuma: avisa e mantém uma saída pelo WhatsApp
         el.proximos.replaceChildren(avisoSemAgenda('Não foi possível carregar a agenda agora.'));
@@ -1161,15 +1181,20 @@
   /* ---------- manter a agenda em dia ---------- */
 
   carregar().then(() => (agendaTentada = true));
+  // Atualiza a agenda a cada minuto (só com a aba aberta e se houver agenda neste site).
   setInterval(() => {
-    if (!document.hidden && !enviando) carregar();
+    if (!document.hidden && !enviando && !semServidor) carregar();
   }, 60000);
-  // Enquanto a agenda não abrir, tenta de novo a cada poucos segundos.
-  const insistir = setInterval(() => {
-    if (agenda) clearInterval(insistir);
-    else if (!document.hidden) carregar();
-  }, 6000);
+  // Se a agenda não abriu, tenta de novo algumas vezes, esperando cada vez mais (6 s, 12 s, 24 s...).
+  function tentarDeNovo() {
+    if (agenda || semServidor || falhas >= 5) return;
+    setTimeout(async () => {
+      if (!document.hidden) await carregar();
+      tentarDeNovo();
+    }, 6000 * 2 ** Math.max(0, falhas - 1));
+  }
+  tentarDeNovo();
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden && !enviando) carregar();
+    if (!document.hidden && !enviando && !semServidor) carregar();
   });
 })();

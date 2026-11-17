@@ -301,8 +301,8 @@ button {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: rgba(255, 253, 251, 0.92);
-  backdrop-filter: blur(12px);
+  /* fundo quase sólido em vez de desfoque: o desfoque era recalculado a cada rolagem */
+  background: rgba(255, 253, 251, 0.97);
   border-bottom: 1px solid transparent;
   transition: border-color 0.3s, box-shadow 0.3s;
 }
@@ -466,8 +466,7 @@ button {
   object-fit: cover;
   /* corte mais para baixo da foto, para o rosto subir e ficar na altura do texto */
   object-position: 55% 45%;
-  /* levemente desfocada: vira atmosfera e não disputa com o texto por cima */
-  filter: saturate(0.85) blur(1.5px);
+  /* o desfoque já vem pronto no arquivo (dra-ericka-fundo-suave.jpg): o navegador não precisa calcular */
   -webkit-mask-image: linear-gradient(to left, #000 30%, transparent 96%);
   mask-image: linear-gradient(to left, #000 30%, transparent 96%);
   animation: abertura-fundo-entra 2.4s var(--suavizar) both;
@@ -589,7 +588,6 @@ button {
   display: block;
   width: 100%;
   height: auto;
-  filter: drop-shadow(0 22px 28px rgba(166, 94, 88, 0.16));
   animation: logo-entra 1.3s 0.1s var(--suavizar) both, flutuar 6s 1.4s ease-in-out infinite;
 }
 
@@ -597,7 +595,6 @@ button {
   from {
     opacity: 0;
     scale: 0.82;
-    filter: drop-shadow(0 0 0 rgba(166, 94, 88, 0)) blur(6px);
   }
   to {
     opacity: 1;
@@ -1966,7 +1963,6 @@ main h2::after {
   background: #efe7da;
   backface-visibility: hidden;
   box-shadow: 0 0 0 1px rgba(184, 135, 50, 0.35), 0 24px 36px -20px rgba(90, 40, 30, 0.55);
-  will-change: transform;
 }
 
 /* as fotos de lado ficam mais escuras, como no giro de verdade */
@@ -2779,6 +2775,15 @@ main h2::after {
   .convite .botao {
     width: 100%;
   }
+}
+
+/* ---------- economia: animações sem fim param quando a parte sai da tela ---------- */
+
+.fora-da-tela,
+.fora-da-tela *,
+.fora-da-tela *::before,
+.fora-da-tela *::after {
+  animation-play-state: paused !important;
 }
 
 /* ---------- segurança: navegador sem animação mostra tudo parado ---------- */

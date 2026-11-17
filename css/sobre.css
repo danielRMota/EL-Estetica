@@ -30,8 +30,7 @@ html:has(.pagina-sobre) {
   height: 100%;
   object-fit: cover;
   object-position: 55% 28%;
-  /* levemente desfocada: vira atmosfera e não disputa com o texto por cima */
-  filter: saturate(0.85) blur(1.5px);
+  /* o desfoque já vem pronto no arquivo (dra-ericka-fundo-suave.jpg): o navegador não precisa calcular */
   -webkit-mask-image: linear-gradient(to left, #000 30%, transparent 96%);
   mask-image: linear-gradient(to left, #000 30%, transparent 96%);
   animation: fundo-entra 2.4s var(--suavizar) both;
@@ -419,11 +418,10 @@ html:not(.js) .logo-rotulo::after {
   padding: 0.35rem 0.85rem 0.35rem 0.6rem;
   border: 0;
   border-radius: 999px;
-  background: rgba(23, 19, 15, 0.62);
+  background: rgba(23, 19, 15, 0.72);
   color: #fff;
   font-size: 0.85rem;
   font-weight: 700;
-  backdrop-filter: blur(6px);
   cursor: pointer;
   transition: background-color 0.25s;
 }

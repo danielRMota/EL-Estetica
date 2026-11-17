@@ -37,6 +37,12 @@
   );
   document.querySelectorAll('[data-revelar]').forEach((no) => revelar.observe(no));
 
+  // Animações sem fim da abertura param quando ela sai da tela.
+  const pausarFora = new IntersectionObserver((entradas) => {
+    for (const entrada of entradas) entrada.target.classList.toggle('fora-da-tela', !entrada.isIntersecting);
+  });
+  document.querySelectorAll('.sobre-abertura').forEach((parte) => pausarFora.observe(parte));
+
   /* ---------- topo: sombra e barra de leitura ---------- */
 
   const topo = $('topo');
@@ -160,4 +166,20 @@
     { threshold: 0.5 },
   );
   videos.forEach((item) => observarVideos.observe(item.figura));
+
+  // Aba em segundo plano: pausa os vídeos; ao voltar, retoma o que estava na tela.
+  const tocandoAntes = new Set();
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      videos.forEach((item) => {
+        if (!item.video.paused) {
+          tocandoAntes.add(item);
+          item.video.pause();
+        }
+      });
+    } else {
+      tocandoAntes.forEach((item) => tocar(item));
+      tocandoAntes.clear();
+    }
+  });
 })();
