@@ -431,6 +431,8 @@ const TIPOS = {
   '.svg': 'image/svg+xml',
   '.webp': 'image/webp',
   '.ico': 'image/x-icon',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
 };
 
 // Só estas pastas são públicas. server.js e dados/ nunca são servidos.
@@ -493,6 +495,7 @@ function lerCorpo(req) {
 function servirArquivo(req, res, caminhoUrl) {
   let relativo = null;
   if (caminhoUrl === '/' || caminhoUrl === '/index.html') relativo = 'index.html';
+  else if (caminhoUrl === '/sobre' || caminhoUrl === '/sobre.html') relativo = 'sobre.html';
   else if (caminhoUrl === '/admin/' || caminhoUrl === '/admin/index.html') relativo = 'admin/index.html';
   else if (caminhoUrl === '/favicon.ico') relativo = 'assets/favicon.png';
   else if (!caminhoUrl.includes('..') && CAMINHOS_PUBLICOS.some((r) => r.test(caminhoUrl))) {
@@ -507,14 +510,40 @@ function servirArquivo(req, res, caminhoUrl) {
     return;
   }
 
-  const imagem = tipo.startsWith('image/');
+  const midia = tipo.startsWith('image/') || tipo.startsWith('video/');
+  const tamanho = fs.statSync(arquivo).size;
   const cabecalhos = {
     ...SEGURANCA,
     'Content-Type': tipo,
-    'Cache-Control': imagem ? 'public, max-age=86400' : 'no-cache',
+    'Cache-Control': midia ? 'public, max-age=86400' : 'no-cache',
+    'Accept-Ranges': 'bytes',
   };
   if (relativo.startsWith('admin/')) cabecalhos['X-Robots-Tag'] = 'noindex, nofollow';
-  res.writeHead(200, cabecalhos);
+
+  // Vídeos são enviados em pedaços: o navegador pede só o trecho que vai tocar
+  // (obrigatório no iPhone, e deixa o vídeo começar sem baixar o arquivo inteiro).
+  const faixa = /^bytes=(\d*)-(\d*)$/.exec(req.headers.range || '');
+  if (faixa && (faixa[1] || faixa[2])) {
+    let inicio = faixa[1] ? Number(faixa[1]) : tamanho - Number(faixa[2]);
+    let fim = faixa[1] && faixa[2] ? Number(faixa[2]) : tamanho - 1;
+    inicio = Math.max(0, inicio);
+    fim = Math.min(fim, tamanho - 1);
+    if (inicio > fim || inicio >= tamanho) {
+      res.writeHead(416, { ...SEGURANCA, 'Content-Range': `bytes */${tamanho}` });
+      res.end();
+      return;
+    }
+    res.writeHead(206, {
+      ...cabecalhos,
+      'Content-Range': `bytes ${inicio}-${fim}/${tamanho}`,
+      'Content-Length': fim - inicio + 1,
+    });
+    if (req.method === 'HEAD') res.end();
+    else fs.createReadStream(arquivo, { start: inicio, end: fim }).pipe(res);
+    return;
+  }
+
+  res.writeHead(200, { ...cabecalhos, 'Content-Length': tamanho });
   if (req.method === 'HEAD') res.end();
   else fs.createReadStream(arquivo).pipe(res);
 }

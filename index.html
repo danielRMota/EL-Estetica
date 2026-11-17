@@ -30,6 +30,7 @@
       <img src="assets/logo.png" alt="EL Saúde & Estética" width="720" height="679">
     </a>
     <nav class="menu" id="menu" aria-label="Seções da página">
+      <a href="sobre.html">Sobre a Dra.</a>
       <a href="#procedimentos">Procedimentos</a>
       <a href="#resultados">Resultados</a>
       <a href="#como-funciona">Como funciona</a>
@@ -48,9 +49,13 @@
 <main id="conteudo">
 
 <section class="abertura" id="inicio">
+  <!-- Foto da Dra. Ericka só no fundo da abertura, quase toda coberta por um degradê branco -->
+  <div class="abertura-fundo" aria-hidden="true">
+    <img src="assets/web/dra-ericka-fundo.jpg" alt="" width="1066" height="1600">
+  </div>
   <div class="largura abertura-grade">
     <div class="abertura-esquerda">
-      <h1 id="titulo-abertura">Estética facial e corporal, com avaliação feita para você.</h1>
+      <h1 id="titulo-abertura">Realce sua beleza, cuide de você por inteiro</h1>
     </div>
 
     <div class="logo-central">
@@ -60,14 +65,16 @@
     <div class="abertura-direita">
       <ul class="abertura-fatos">
         <li>Avaliação individual</li>
-        <li>Atendimento com hora marcada</li>
-        <li>Queimadas, Paraíba</li>
+        <li>Protocolos personalizados</li>
+        <li>Atendimento com hora marcada.</li>
       </ul>
       <div class="abertura-acoes">
-        <a class="botao botao-ouro" href="#agendar">Agendar minha avaliação</a>
+        <a class="botao botao-ouro" href="#agendar">Quero agendar minha avaliação</a>
         <a class="botao botao-contorno" href="#resultados">Ver resultados</a>
       </div>
     </div>
+
+    <p class="abertura-frase">Onde estética, cuidado e autoestima se encontram.</p>
   </div>
 </section>
 
@@ -82,92 +89,122 @@
   <div class="largura">
     <div class="cabecalho-secao" data-revelar>
       <h2>Procedimentos</h2>
-      <p>Você não precisa chegar sabendo qual procedimento fazer. A indicação sai da avaliação, de acordo com a sua pele e com o resultado que você procura.</p>
+      <p><strong>Você não precisa chegar sabendo qual procedimento fazer.</strong> A indicação sai da avaliação, de acordo com a sua pele e com o resultado que você procura.</p>
     </div>
 
-    <div class="carta">
-      <section class="carta-grupo" aria-labelledby="grupo-rosto" data-revelar>
-        <h3 id="grupo-rosto">Rosto</h3>
-        <dl>
-          <div><dt>Botox</dt><dd>Toxina botulínica para suavizar as linhas da testa, entre as sobrancelhas e ao redor dos olhos.</dd></div>
-          <div><dt>Preenchimento labial</dt><dd>Contorno, volume e proporção para os lábios, na medida combinada com você.</dd></div>
-          <div><dt>Harmonização facial</dt><dd>Procedimentos planejados em conjunto para equilibrar as proporções do rosto, como queixo, mandíbula e perfil.</dd></div>
-          <div><dt>Bioestimulador de colágeno</dt><dd>Estimula a produção de colágeno para melhorar a firmeza e a qualidade da pele ao longo dos meses.</dd></div>
-        </dl>
-      </section>
+    <div class="pastas" data-revelar>
+      <h3 class="pasta-cabeca pasta-facial">
+        <button type="button" class="pasta" id="pasta-facial" aria-expanded="false" aria-controls="conteudo-facial">
+          <span class="pasta-fundo" aria-hidden="true"></span>
+          <span class="pasta-papel" aria-hidden="true"></span>
+          <span class="pasta-papel" aria-hidden="true"></span>
+          <span class="pasta-frente">
+            <span class="pasta-conta"></span>
+            <span class="pasta-nome">Procedimento Facial</span>
+            <span class="pasta-previa" aria-hidden="true"></span>
+            <span class="pasta-acao"><span class="pasta-acao-texto">Ver procedimentos</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </span>
+        </button>
+      </h3>
+      <div class="pasta-conteudo pasta-facial" id="conteudo-facial" role="region" aria-labelledby="pasta-facial">
+        <div class="pasta-interior">
+          <dl class="folhas">
+              <div class="folha"><dt>Botox</dt><dd>Toxina botulínica, suavização das linhas de expressão e prevenção do envelhecimento, preservando a naturalidade dos movimentos.</dd></div>
+              <div class="folha"><dt>Preenchimento labial</dt><dd>Contorno, hidratação e volume na medida certa, respeitando a proporção e a harmonia do seu rosto com ácido hialurônico.</dd></div>
+              <div class="folha"><dt>Harmonização facial</dt><dd>Um planejamento personalizado para equilibrar proporções e valorizar pontos como queixo, mandíbula e perfil com ácido hialurônico.</dd></div>
+              <div class="folha"><dt>Bioestimulador de colágeno</dt><dd>Estimula a produção de colágeno, contribuindo para mais firmeza, qualidade e sustentação da pele ao longo do tempo.</dd></div>
+              <div class="folha"><dt>Limpeza de pele avançada</dt><dd>Cuidado profundo para remover impurezas, melhorar a textura e devolver à pele um aspecto mais saudável e luminoso.</dd></div>
+              <div class="folha"><dt>Peeling químico</dt><dd>Renovação da pele para melhorar textura, uniformidade e aparência de manchas e linhas finas, conforme indicação.</dd></div>
+              <div class="folha"><dt>Microagulhamento</dt><dd>Protocolo que promove estímulo de colágeno e renovação da pele, podendo contribuir para textura, cicatrizes e qualidade cutânea.</dd></div>
+          </dl>
+        </div>
+      </div>
+      <h3 class="pasta-cabeca pasta-corporal">
+        <button type="button" class="pasta" id="pasta-corporal" aria-expanded="false" aria-controls="conteudo-corporal">
+          <span class="pasta-fundo" aria-hidden="true"></span>
+          <span class="pasta-papel" aria-hidden="true"></span>
+          <span class="pasta-papel" aria-hidden="true"></span>
+          <span class="pasta-frente">
+            <span class="pasta-conta"></span>
+            <span class="pasta-nome">Procedimento Corporal</span>
+            <span class="pasta-previa" aria-hidden="true"></span>
+            <span class="pasta-acao"><span class="pasta-acao-texto">Ver procedimentos</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+          </span>
+        </button>
+      </h3>
+      <div class="pasta-conteudo pasta-corporal" id="conteudo-corporal" role="region" aria-labelledby="pasta-corporal">
+        <div class="pasta-interior">
+          <dl class="folhas">
+              <div class="folha"><dt>Flacidez</dt><dd>Protocolos personalizados para melhorar firmeza e qualidade da pele.</dd></div>
+              <div class="folha"><dt>Gordura localizada</dt><dd>Tratamentos direcionados de acordo com a avaliação e as características de cada região.</dd></div>
+              <div class="folha"><dt>Harmonização glútea</dt><dd>Planejamento personalizado para valorizar contorno, proporção e projeção dos glúteos.</dd></div>
+              <div class="folha"><dt>Aumento de massa magra</dt><dd>Protocolos voltados para potencializar os resultados corporais de acordo com seus objetivos.</dd></div>
+              <div class="folha"><dt>Microvasos - PEIM</dt><dd>Tratamento direcionado para microvasos, sempre após avaliação individual.</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
 
-      <section class="carta-grupo" aria-labelledby="grupo-corpo" data-revelar>
-        <h3 id="grupo-corpo">Corpo</h3>
-        <dl>
-          <div><dt>Harmonização glútea</dt><dd>Protocolo para contorno, projeção e qualidade da pele da região glútea.</dd></div>
-          <div><dt>Tratamento de flacidez</dt><dd>Protocolos corporais para melhorar a firmeza da pele em áreas como o abdômen.</dd></div>
-        </dl>
-      </section>
-
-      <section class="carta-grupo" aria-labelledby="grupo-pele" data-revelar>
-        <h3 id="grupo-pele">Pele</h3>
-        <dl>
-          <div><dt>Limpeza de pele</dt><dd>Remoção de cravos e impurezas, com cuidados para acalmar e hidratar a pele.</dd></div>
-          <div><dt>Peeling</dt><dd>Renovação da camada superficial da pele para tratar textura e manchas.</dd></div>
-          <div><dt>Microagulhamento</dt><dd>Estímulo de colágeno para poros, marcas e textura da pele.</dd></div>
-        </dl>
-      </section>
+    <div class="convite" data-revelar>
+      <svg class="convite-estrela" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C12.800 7 17 11.200 24 12C17 12.800 12.800 17 12 24C11.200 17 7 12.800 0 12C7 11.200 11.200 7 12 0Z"/></svg>
+      <p class="convite-pergunta">Não sabe qual procedimento é ideal para você?</p>
+      <p class="convite-texto">Tudo começa com uma avaliação individual.</p>
     </div>
   </div>
 </section>
 
-<section class="secao secao-rosa" id="resultados">
-  <div class="largura">
-    <div class="cabecalho-secao cabecalho-com-controles" data-revelar>
-      <div>
-        <h2>Resultados de pacientes</h2>
-        <p>Fotos de antes e depois feitas na clínica. Toque em uma foto para ampliar. Cada pessoa responde de um jeito, e o que é indicado para você só a avaliação pode dizer.</p>
+<section class="secao secao-resultados" id="resultados">
+  <div class="largura resultados-grade">
+    <div class="cabecalho-secao" data-revelar>
+      <h2>Nossos Resultados</h2>
+      <p>Cada paciente tem <strong>uma história, uma beleza única e resultados individualizados.</strong> Confira alguns dos nossos procedimentos e transformações.</p>
+      <p class="resultado-atual" aria-hidden="true"><span class="resultado-nome" id="resultado-nome">Preenchimento labial</span></p>
+      <p class="resultado-dica">Arraste a foto para girar. Toque na foto da frente para ampliar.</p>
+    </div>
+
+    <div class="carrossel" data-revelar>
+      <div class="giro" id="giro" tabindex="0" role="region" aria-roledescription="carrossel" aria-label="Fotos de antes e depois. Use as setas do teclado para girar.">
+        <div class="giro-palco" id="galeria">
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-1.jpg" alt="Antes e depois de preenchimento labial, vista de frente" width="1080" height="1350"></button><figcaption class="oculto">Preenchimento labial</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-2.jpg" alt="Antes e depois de perfiloplastia com ácido hialurônico, vista de perfil" width="1080" height="1350"></button><figcaption class="oculto">Perfiloplastia com ácido hialurônico</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-3.jpg" alt="Antes e depois de botox na região entre as sobrancelhas" width="1080" height="1350"></button><figcaption class="oculto">Botox entre as sobrancelhas</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-4.jpg" alt="Antes e depois de botox nas linhas da testa" width="1080" height="1350"></button><figcaption class="oculto">Botox na testa</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-5.jpg" alt="Antes e depois de botox nas linhas ao redor dos olhos" width="1080" height="1350"></button><figcaption class="oculto">Botox ao redor dos olhos</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-6.jpg" alt="Antes e depois de preenchimento labial, vista lateral" width="1080" height="1350"></button><figcaption class="oculto">Preenchimento labial</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-7.jpg" alt="Antes e depois de harmonização glútea" width="1080" height="1350"></button><figcaption class="oculto">Harmonização glútea</figcaption></figure>
+          <figure class="giro-cartao"><button type="button" class="foto"><img src="assets/web/antes-depois-8.jpg" alt="Antes e depois de tratamento de flacidez no abdômen" width="1080" height="1350"></button><figcaption class="oculto">Tratamento de flacidez</figcaption></figure>
+        </div>
       </div>
-      <div class="controles-galeria">
-        <button type="button" class="seta" id="galeria-voltar" aria-label="Fotos anteriores">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <button type="button" class="seta" id="galeria-avancar" aria-label="Próximas fotos">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.800" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
+      <div class="carrossel-rodape">
+        <div class="galeria-pontos" id="galeria-pontos" role="group" aria-label="Escolher foto"></div>
+        <span class="carrossel-contador" id="galeria-contador" aria-hidden="true">1/8</span>
       </div>
     </div>
-  </div>
-
-  <div class="galeria" id="galeria" tabindex="0" role="region" aria-label="Fotos de antes e depois" data-revelar>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-botox-1.jpg" alt="Antes e depois de botox na testa" width="900" height="1125" loading="lazy"></button><figcaption>Botox na testa</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-labios.jpg" alt="Antes e depois de preenchimento labial" width="900" height="1599" loading="lazy"></button><figcaption>Preenchimento labial</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-botox-2.jpg" alt="Antes e depois de botox na região frontal" width="900" height="1125" loading="lazy"></button><figcaption>Botox na região frontal</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-perfil.jpg" alt="Antes e depois de harmonização facial, vista de perfil" width="828" height="1472" loading="lazy"></button><figcaption>Harmonização facial, perfil</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-botox-3.jpg" alt="Antes e depois de tratamento na região dos olhos" width="900" height="1125" loading="lazy"></button><figcaption>Região dos olhos</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-preenchimento.jpg" alt="Antes e depois de preenchimento facial, vista de perfil" width="900" height="1125" loading="lazy"></button><figcaption>Preenchimento facial, perfil</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-botox-4.jpg" alt="Antes e depois de botox em linhas de expressão" width="900" height="1125" loading="lazy"></button><figcaption>Botox em linhas de expressão</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-gluteo.jpg" alt="Antes e depois de harmonização glútea, com 30 dias" width="900" height="1125" loading="lazy"></button><figcaption>Harmonização glútea, 30 dias</figcaption></figure>
-    <figure><button type="button" class="foto"><img src="assets/web/resultado-flacidez.jpg" alt="Antes e depois de tratamento de flacidez no abdômen" width="900" height="1125" loading="lazy"></button><figcaption>Flacidez no abdômen</figcaption></figure>
   </div>
 </section>
 
 <section class="secao secao-escura" id="como-funciona">
   <div class="largura">
     <div class="cabecalho-secao" data-revelar>
-      <h2>Como funciona o atendimento</h2>
+      <h2>Sua experiência da EL</h2>
+      <p>Cada detalhe do seu atendimento é pensado para oferecer acolhimento, segurança e cuidado. Conheça as etapas da sua experiência conosco.</p>
     </div>
     <ol class="passos" id="passos">
       <li>
-        <h3>Conversa e horário</h3>
-        <p>Aqui no site, a assistente faz algumas perguntas e você escolhe o horário. Ele fica reservado na hora.</p>
+        <h3>Primeiro contato</h3>
+        <p>Nossa equipe conversa com você, entende suas expectativas e auxilia na escolha do melhor horário para sua avaliação..</p>
       </li>
       <li>
-        <h3>Avaliação</h3>
-        <p>A Dra. Ericka já chega sabendo da sua queixa, avalia rosto, pele ou corpo e explica o que é indicado e o que não é.</p>
+        <h3>Avaliação personalizada</h3>
+        <p>A Dra. Ericka realiza uma avaliação individualizada, compreende suas necessidades e explica quais procedimentos podem ser indicados para você.</p>
       </li>
       <li>
-        <h3>Procedimento</h3>
-        <p>Feito conforme o plano combinado na avaliação, sem nada além do que foi conversado.</p>
+        <h3>Seu momento de cuidado</h3>
+        <p>Com o planejamento definido e aprovado por você, realizamos o procedimento de acordo com suas necessidades e expectativas.</p>
       </li>
       <li>
         <h3>Acompanhamento</h3>
-        <p>Você sai com as orientações de cuidado e, quando necessário, com o retorno já combinado.</p>
+        <p>Nosso cuidado continua após o procedimento. Você recebe orientações individualizadas e acompanhamento, com retorno programado quando indicado.</p>
       </li>
     </ol>
   </div>
@@ -290,27 +327,30 @@
 
     <div data-revelar>
       <h2>Dúvidas frequentes</h2>
-      <div class="duvidas">
-        <details>
-          <summary>Preciso saber qual procedimento quero fazer?</summary>
-          <p>Não. A avaliação serve para isso: a Dra. Ericka entende o que você quer mudar e indica as opções para o seu caso.</p>
-        </details>
-        <details>
-          <summary>Para que servem as perguntas da assistente?</summary>
-          <p>Para a Dra. Ericka conhecer sua queixa e seu histórico antes da avaliação. As respostas ficam visíveis só para ela.</p>
-        </details>
-        <details>
-          <summary>O resultado fica natural?</summary>
-          <p>O planejamento respeita os seus traços e as proporções do seu rosto. As quantidades e os pontos de aplicação são definidos na avaliação, junto com você.</p>
-        </details>
-        <details>
-          <summary>Posso fazer mais de um procedimento?</summary>
-          <p>Em alguns casos, sim. Depende da avaliação e da indicação profissional.</p>
-        </details>
-        <details>
-          <summary>E se eu precisar desmarcar?</summary>
-          <p>Avise pelo WhatsApp com a maior antecedência que puder. Assim o horário volta para a agenda e outra pessoa pode usar.</p>
-        </details>
+      <p class="faq-apoio">Tudo o que você precisa saber para viver sua experiência na EL Saúde &amp; Estética.</p>
+      <div class="faq">
+        <button type="button" class="faq-botao" id="faq-botao" aria-expanded="false" aria-controls="faq-conteudo">
+          <span class="faq-texto">
+            <span class="faq-titulo">Tire suas dúvidas antes de agendar</span>
+            <span class="faq-conta" id="faq-conta"></span>
+          </span>
+          <span class="faq-acao"><span class="faq-acao-texto">Ver respostas</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></span>
+        </button>
+        <div class="faq-conteudo" id="faq-conteudo" role="region" aria-labelledby="faq-botao">
+          <div class="faq-interior">
+            <dl class="faq-lista">
+              <div class="faq-item"><dt>Preciso saber qual procedimento quero fazer antes da avaliação?</dt><dd>Não! Você não precisa chegar sabendo qual procedimento realizar. Durante a avaliação, a Dra. Ericka irá entender suas expectativas, avaliar suas características e apresentar as possibilidades mais adequadas para você.</dd></div>
+              <div class="faq-item"><dt>Como funciona a avaliação?</dt><dd>A avaliação é um momento individualizado para conhecer suas necessidades, ouvir suas expectativas e analisar os pontos que podem ser trabalhados. A partir disso, é elaborado um planejamento personalizado, respeitando sua beleza e suas características.</dd></div>
+              <div class="faq-item"><dt>Os resultados ficam naturais?</dt><dd>Nosso propósito é valorizar sua beleza sem perder sua essência. Cada planejamento é realizado respeitando seus traços, proporções e características individuais, buscando resultados harmônicos e equilibrados.</dd></div>
+              <div class="faq-item"><dt>Os procedimentos são dolorosos?</dt><dd>O desconforto varia de acordo com o procedimento e a sensibilidade de cada pessoa. Quando indicado, são utilizados recursos para proporcionar mais conforto durante o atendimento.</dd></div>
+              <div class="faq-item"><dt>Posso realizar mais de um procedimento na mesma sessão?</dt><dd>Em alguns casos, sim! A possibilidade depende de uma avaliação individualizada, considerando as indicações profissionais e a segurança de cada paciente.</dd></div>
+              <div class="faq-item"><dt>Quanto tempo duram os resultados?</dt><dd>A duração varia conforme o procedimento realizado, os produtos utilizados e as características individuais de cada paciente. Durante a avaliação, você receberá todas as informações sobre o procedimento indicado.</dd></div>
+              <div class="faq-item"><dt>Preciso de cuidados após o procedimento?</dt><dd>Sim! Cada procedimento possui cuidados específicos. Você receberá orientações individualizadas e acompanhamento para que tenha todo o suporte necessário após o atendimento.</dd></div>
+              <div class="faq-item"><dt>Como faço para agendar meu atendimento?</dt><dd>É simples! Clique no botão de agendamento disponível no site e entre em contato com nossa equipe pelo WhatsApp. Será um prazer receber você na EL Saúde &amp; Estética.</dd></div>
+              <div class="faq-item"><dt>E se eu precisar cancelar ou remarcar meu horário?</dt><dd>Caso aconteça algum imprevisto, entre em contato com nossa equipe pelo WhatsApp com a maior antecedência possível para verificar a disponibilidade de um novo horário.</dd></div>
+            </dl>
+          </div>
+        </div>
       </div>
     </div>
   </div>

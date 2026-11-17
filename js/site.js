@@ -164,14 +164,248 @@
   }
 
   /* =====================================================================
+     Procedimentos em pastas: uma aberta por vez
+     ===================================================================== */
+
+  const pastas = [...document.querySelectorAll('.pasta')];
+
+  pastas.forEach((pasta) => {
+    const conteudo = $(pasta.getAttribute('aria-controls'));
+    const nomes = [...conteudo.querySelectorAll('dt')].map((dt) => dt.textContent.trim());
+    // A capa mostra quantos procedimentos tem e uma prévia dos nomes, tirados da própria lista.
+    pasta.querySelector('.pasta-conta').textContent =
+      nomes.length === 1 ? '1 procedimento' : `${nomes.length} procedimentos`;
+    pasta.querySelector('.pasta-previa').textContent = nomes.join(', ');
+    conteudo.querySelectorAll('.folha').forEach((folha, i) => folha.style.setProperty('--i', i));
+  });
+
+  function abrirPasta(pasta, abrir) {
+    const conteudo = $(pasta.getAttribute('aria-controls'));
+    pasta.setAttribute('aria-expanded', String(abrir));
+    pasta.querySelector('.pasta-acao-texto').textContent = abrir ? 'Fechar pasta' : 'Abrir pasta';
+    conteudo.classList.toggle('aberta', abrir);
+  }
+
+  pastas.forEach((pasta) =>
+    pasta.addEventListener('click', () => {
+      const abrir = pasta.getAttribute('aria-expanded') !== 'true';
+      pastas.forEach((outra) => outra !== pasta && abrirPasta(outra, false));
+      abrirPasta(pasta, abrir);
+      if (!abrir) return;
+      // Depois que abre, rola só o necessário para o conteúdo ficar à vista.
+      const conteudo = $(pasta.getAttribute('aria-controls'));
+      setTimeout(() => {
+        const caixa = conteudo.getBoundingClientRect();
+        const folga = innerHeight - caixa.bottom;
+        if (folga < 0) {
+          const subir = Math.min(-folga + 24, pasta.getBoundingClientRect().top - 90);
+          if (subir > 0) scrollBy({ top: subir, behavior: semMovimento ? 'auto' : 'smooth' });
+        }
+      }, 600);
+    }),
+  );
+
+  /* =====================================================================
+     Dúvidas frequentes: um cartão que abre as perguntas e respostas
+     ===================================================================== */
+
+  const faqBotao = $('faq-botao');
+  const faqConteudo = $('faq-conteudo');
+  const faqItens = [...faqConteudo.querySelectorAll('.faq-item')];
+  $('faq-conta').textContent =
+    faqItens.length === 1 ? '1 pergunta com resposta' : `${faqItens.length} perguntas com respostas`;
+  faqItens.forEach((item, i) => item.style.setProperty('--i', i));
+
+  faqBotao.addEventListener('click', () => {
+    const abrir = faqBotao.getAttribute('aria-expanded') !== 'true';
+    faqBotao.setAttribute('aria-expanded', String(abrir));
+    faqBotao.querySelector('.faq-acao-texto').textContent = abrir ? 'Fechar' : 'Ver respostas';
+    faqConteudo.classList.toggle('aberta', abrir);
+  });
+
+  /* =====================================================================
      Galeria e foto ampliada
      ===================================================================== */
 
+  // Carrossel giratório: as fotos ficam em volta de um cilindro que gira ao arrastar,
+  // pelas setas, pelos pontos ou pelo teclado. Dá voltas sem fim, nos dois sentidos.
+  const giro = $('giro');
   const galeria = $('galeria');
-  const rolarGaleria = (sentido) =>
-    galeria.scrollBy({ left: sentido * galeria.clientWidth * 0.7, behavior: semMovimento ? 'auto' : 'smooth' });
-  $('galeria-voltar').addEventListener('click', () => rolarGaleria(-1));
-  $('galeria-avancar').addEventListener('click', () => rolarGaleria(1));
+  const figuras = [...galeria.querySelectorAll('figure')];
+  const legendas = figuras.map((figura) => figura.querySelector('figcaption').textContent.trim());
+  const nomeResultado = $('resultado-nome');
+  const contadorGaleria = $('galeria-contador');
+  const total = figuras.length;
+  const PASSO = 78; // graus entre uma foto e a próxima no cilindro
+
+  let posicao = 0; // posição contínua (1 = uma foto)
+  let alvo = 0;
+  let fotoAtual = -1;
+  let quadro = null;
+
+  const modulo = (n) => ((n % total) + total) % total;
+
+  // Distância de cada foto até a frente, pelo caminho mais curto (para o giro sem fim).
+  function distancia(i) {
+    let d = modulo(i - posicao);
+    if (d > total / 2) d -= total;
+    return d;
+  }
+
+  function raio() {
+    const largura = galeria.offsetWidth || 240;
+    return largura / 2 / Math.tan(((PASSO / 2) * Math.PI) / 180) + 14;
+  }
+
+  function desenhar() {
+    const r = raio();
+    figuras.forEach((figura, i) => {
+      const d = distancia(i);
+      const longe = Math.abs(d);
+      figura.style.transform = `translateZ(${-r}px) rotateY(${d * PASSO}deg) translateZ(${r}px)`;
+      figura.style.opacity = longe < 1.35 ? 1 : longe < 1.7 ? (1.7 - longe) / 0.35 : 0;
+      figura.style.visibility = longe < 1.7 ? 'visible' : 'hidden';
+      figura.style.zIndex = String(100 - Math.round(longe * 10));
+      figura.style.setProperty('--sombra', Math.min(longe, 1).toFixed(3));
+    });
+    atualizarGaleria();
+  }
+
+  const pontos = figuras.map((figura, i) => {
+    const ponto = criar('button', 'galeria-ponto');
+    ponto.type = 'button';
+    ponto.setAttribute('aria-label', `Foto ${i + 1} de ${total}: ${legendas[i]}`);
+    ponto.addEventListener('click', () => irParaFoto(i));
+    $('galeria-pontos').append(ponto);
+    return ponto;
+  });
+
+  function atualizarGaleria() {
+    const atual = modulo(Math.round(posicao));
+    if (atual === fotoAtual) return;
+    fotoAtual = atual;
+    pontos.forEach((ponto, i) => {
+      if (i === atual) ponto.setAttribute('aria-current', 'true');
+      else ponto.removeAttribute('aria-current');
+    });
+    figuras.forEach((figura, i) => {
+      figura.classList.toggle('atual', i === atual);
+      figura.querySelector('.foto').tabIndex = i === atual ? 0 : -1;
+      figura.setAttribute('aria-hidden', String(i !== atual));
+    });
+    contadorGaleria.textContent = `${atual + 1}/${total}`;
+    nomeResultado.textContent = legendas[atual];
+    nomeResultado.style.animation = 'none';
+    void nomeResultado.offsetWidth;
+    nomeResultado.style.animation = '';
+  }
+
+  // Gira suavemente até o alvo.
+  function animar() {
+    cancelAnimationFrame(quadro);
+    if (semMovimento) {
+      posicao = alvo;
+      desenhar();
+      return;
+    }
+    const passo = () => {
+      posicao += (alvo - posicao) * 0.14;
+      if (Math.abs(alvo - posicao) < 0.002) posicao = alvo;
+      desenhar();
+      if (posicao !== alvo) quadro = requestAnimationFrame(passo);
+    };
+    quadro = requestAnimationFrame(passo);
+    // Garantia para navegadores que pausam a animação: termina no lugar certo.
+    clearTimeout(animar.garantia);
+    animar.garantia = setTimeout(() => {
+      if (posicao !== alvo) {
+        posicao = alvo;
+        desenhar();
+      }
+    }, 1500);
+  }
+
+  // Vai até a foto i pelo caminho mais curto.
+  function irParaFoto(i) {
+    let delta = modulo(i - Math.round(alvo));
+    if (delta > total / 2) delta -= total;
+    alvo = Math.round(alvo) + delta;
+    animar();
+  }
+
+  const girar = (sentido) => {
+    alvo = Math.round(alvo) + sentido;
+    animar();
+  };
+
+  giro.addEventListener('keydown', (evento) => {
+    if (evento.key === 'ArrowLeft') {
+      evento.preventDefault();
+      girar(-1);
+    } else if (evento.key === 'ArrowRight') {
+      evento.preventDefault();
+      girar(1);
+    }
+  });
+
+  // Arrastar com o mouse ou o dedo.
+  let arraste = null;
+  let arrastou = false;
+
+  giro.addEventListener('pointerdown', (evento) => {
+    if (evento.button !== 0) return;
+    arraste = { x: evento.clientX, y: evento.clientY, inicio: posicao, id: evento.pointerId, capturado: false };
+    arrastou = false;
+  });
+
+  giro.addEventListener('pointermove', (evento) => {
+    if (!arraste || evento.pointerId !== arraste.id) return;
+    const dx = evento.clientX - arraste.x;
+    const dy = evento.clientY - arraste.y;
+    if (!arraste.capturado) {
+      // Só começa a girar quando o movimento é mais para o lado do que para baixo.
+      if (Math.abs(dx) < 6 || Math.abs(dx) < Math.abs(dy)) return;
+      arraste.capturado = true;
+      arrastou = true;
+      giro.setPointerCapture(evento.pointerId);
+      giro.classList.add('arrastando');
+      cancelAnimationFrame(quadro);
+    }
+    posicao = arraste.inicio - dx / (galeria.offsetWidth * 0.9);
+    alvo = posicao;
+    desenhar();
+  });
+
+  function soltar(evento) {
+    if (!arraste || evento.pointerId !== arraste.id) return;
+    if (arraste.capturado) {
+      giro.classList.remove('arrastando');
+      const dx = evento.clientX - arraste.x;
+      // Um puxão curto e rápido já passa para a próxima foto.
+      const andou = arraste.inicio - posicao;
+      alvo = Math.abs(andou) < 0.5 && Math.abs(dx) > 30 ? Math.round(arraste.inicio) - Math.sign(dx) : Math.round(posicao);
+      animar();
+      setTimeout(() => (arrastou = false), 60);
+    }
+    arraste = null;
+  }
+  giro.addEventListener('pointerup', soltar);
+  giro.addEventListener('pointercancel', soltar);
+
+  // Depois de arrastar, o clique que vem junto não abre a foto.
+  giro.addEventListener(
+    'click',
+    (evento) => {
+      if (!arrastou) return;
+      arrastou = false;
+      evento.preventDefault();
+      evento.stopPropagation();
+    },
+    true,
+  );
+
+  addEventListener('resize', desenhar);
+  desenhar();
 
   const fotos = [...galeria.querySelectorAll('.foto')];
   const visor = $('visor');
@@ -187,11 +421,17 @@
 
   fotos.forEach((foto, i) =>
     foto.addEventListener('click', () => {
+      if (i !== fotoAtual) {
+        irParaFoto(i);
+        return;
+      }
       mostrarFoto(i);
       visor.showModal();
     }),
   );
   $('visor-fechar').addEventListener('click', () => visor.close());
+  // Ao fechar a foto ampliada, o carrossel fica na última foto vista.
+  visor.addEventListener('close', () => irParaFoto(fotoAberta));
   $('visor-voltar').addEventListener('click', () => mostrarFoto(fotoAberta - 1));
   $('visor-avancar').addEventListener('click', () => mostrarFoto(fotoAberta + 1));
   visor.addEventListener('click', (evento) => {
