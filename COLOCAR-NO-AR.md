@@ -92,6 +92,17 @@ O site limita tentativas de senha e agendamentos por IP. Para isso funcionar dir
 
 O **HTTPS (cadeado) é automático**: o Render cria e renova o certificado sozinho.
 
+### Se o domínio é da Hostinger
+
+1. hPanel → **Domínios** → clique no domínio → **DNS / Nameservers** (ou **Gerenciar** → **Zona DNS**).
+2. Em **Nameservers**, confira se estão os da Hostinger (algo como `ns1.dns-parking.com`). Se estiverem outros, a mudança tem que ser feita onde eles apontam.
+3. Em **Registros DNS** (DNS records):
+   - **Apague** o registro **A** de nome `@` e o **CNAME** (ou **A**) de nome `www` que já existirem. Apague também qualquer **AAAA**.
+   - **Não apague** registros **MX** e **TXT**: eles são do e-mail do domínio.
+   - **Adicione** um registro **A**: Nome `@`, Aponta para `216.24.57.1`, TTL padrão.
+   - **Adicione** um registro **CNAME**: Nome `www`, Aponta para `el-saude-estetica.onrender.com`, TTL padrão.
+4. Se a Hostinger avisar que o domínio está ligado a um site hospedado nela, tudo bem: a partir daqui quem responde pelo domínio é o Render.
+
 ---
 
 ## Atualizar o site depois
