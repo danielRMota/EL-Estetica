@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Agenda da clínica | EL Saúde & Estética</title>
+<meta name="theme-color" content="#17130f">
+<link rel="icon" type="image/png" href="../assets/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Marcellus&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+<!-- Entrada -->
+<main class="entrada" id="tela-entrada" hidden>
+  <form class="entrada-caixa" id="form-entrada" novalidate>
+    <img src="../assets/monograma.png" alt="" width="72" height="72">
+    <h1>Agenda da clínica</h1>
+    <p>Área da Dra. Ericka. Entre com a senha do painel.</p>
+    <div class="campo">
+      <label for="entrada-senha">Senha</label>
+      <input id="entrada-senha" type="password" autocomplete="current-password" required>
+    </div>
+    <p class="erro" id="entrada-erro" role="alert" hidden></p>
+    <button class="botao botao-ouro" type="submit">Entrar</button>
+    <p class="entrada-dica" id="entrada-dica" hidden>Primeiro acesso: a senha inicial está no arquivo <strong>dados/SENHA-INICIAL.txt</strong>, dentro da pasta do site. Depois de entrar, troque por uma senha sua em Configurações.</p>
+  </form>
+</main>
+
+<!-- Painel -->
+<div id="painel" hidden>
+  <header class="barra">
+    <div class="largura barra-linha">
+      <a class="marca" href="./" aria-label="Agenda da clínica">
+        <img src="../assets/monograma.png" alt="" width="40" height="40">
+        <span>Agenda da clínica</span>
+      </a>
+      <div class="barra-acoes">
+        <a href="../#agendar" target="_blank" rel="noopener">Testar agendamento no site</a>
+        <a href="../" target="_blank" rel="noopener">Ver o site</a>
+        <button type="button" class="botao-texto" id="botao-sair">Sair</button>
+      </div>
+    </div>
+    <div class="largura">
+      <div class="abas" role="tablist" aria-label="Seções do painel">
+        <button type="button" role="tab" id="tab-agenda" aria-controls="aba-agenda" aria-selected="true">Agenda</button>
+        <button type="button" role="tab" id="tab-horarios" aria-controls="aba-horarios" aria-selected="false" tabindex="-1">Horários de atendimento</button>
+        <button type="button" role="tab" id="tab-config" aria-controls="aba-config" aria-selected="false" tabindex="-1">Configurações</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="largura">
+    <p class="faixa-aviso" id="aviso-senha" hidden>Você ainda está usando a senha inicial. <button type="button" class="botao-texto" id="aviso-senha-ir">Trocar a senha agora</button></p>
+  </div>
+
+  <main class="largura conteudo">
+
+    <!-- Agenda -->
+    <section id="aba-agenda" role="tabpanel" aria-labelledby="tab-agenda">
+      <div class="numeros" id="numeros"></div>
+
+      <div class="agenda-grade">
+        <aside class="calendario" aria-label="Calendário">
+          <div class="calendario-topo">
+            <button type="button" class="seta" id="mes-voltar" aria-label="Mês anterior">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+            <h2 id="mes-nome"></h2>
+            <button type="button" class="seta" id="mes-avancar" aria-label="Próximo mês">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          </div>
+          <div class="calendario-semana" aria-hidden="true">
+            <span>seg</span><span>ter</span><span>qua</span><span>qui</span><span>sex</span><span>sáb</span><span>dom</span>
+          </div>
+          <div class="calendario-dias" id="calendario-dias"></div>
+          <p class="calendario-legenda"><span class="ponto"></span> Dia com pacientes marcadas</p>
+        </aside>
+
+        <div class="dia">
+          <div class="dia-topo">
+            <div>
+              <h2 id="dia-titulo"></h2>
+              <p id="dia-resumo"></p>
+            </div>
+            <div class="dia-navegar">
+              <button type="button" class="seta" id="dia-voltar" aria-label="Dia anterior">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button type="button" class="botao botao-contorno botao-compacto" id="dia-hoje">Hoje</button>
+              <button type="button" class="seta" id="dia-avancar" aria-label="Próximo dia">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <p class="faixa-aviso" id="dia-fechado" hidden>Dia fechado. Nenhum horário deste dia aparece no site.</p>
+
+          <ul class="horarios" id="horarios"></ul>
+
+          <div class="dia-acoes">
+            <form class="novo-horario" id="form-novo-horario">
+              <label for="novo-horario-hora">Novo horário neste dia</label>
+              <input id="novo-horario-hora" type="time" required>
+              <button class="botao botao-contorno botao-compacto" type="submit">Adicionar horário</button>
+            </form>
+            <button type="button" class="botao botao-contorno botao-compacto" id="botao-fechar-dia">Fechar o dia</button>
+          </div>
+        </div>
+      </div>
+
+      <section class="proximas" aria-labelledby="proximas-titulo">
+        <h2 id="proximas-titulo">Próximas pacientes</h2>
+        <div id="proximas-lista"></div>
+      </section>
+    </section>
+
+    <!-- Horários de atendimento -->
+    <section id="aba-horarios" role="tabpanel" aria-labelledby="tab-horarios" hidden>
+      <div class="titulo-aba">
+        <h2>Horários de atendimento</h2>
+        <p>Estes são os horários que se repetem toda semana e aparecem no site para agendamento. Para mudar um dia específico (folga, feriado, horário extra), use a aba Agenda.</p>
+      </div>
+
+      <form class="preencher" id="form-preencher">
+        <h3>Preencher vários dias de uma vez</h3>
+        <div class="preencher-dias" id="preencher-dias" role="group" aria-label="Dias da semana"></div>
+        <div class="preencher-campos">
+          <div class="campo"><label for="preencher-de">Primeiro horário</label><input id="preencher-de" type="time" value="08:00" required></div>
+          <div class="campo"><label for="preencher-ate">Último horário</label><input id="preencher-ate" type="time" value="17:00" required></div>
+          <div class="campo"><label for="preencher-intervalo">Intervalo</label>
+            <select id="preencher-intervalo">
+              <option value="30">30 minutos</option>
+              <option value="45">45 minutos</option>
+              <option value="60" selected>1 hora</option>
+              <option value="90">1 hora e meia</option>
+              <option value="120">2 horas</option>
+            </select>
+          </div>
+          <button class="botao botao-contorno" type="submit">Preencher dias marcados</button>
+        </div>
+      </form>
+
+      <div class="semana" id="semana"></div>
+
+      <div class="salvar-linha">
+        <button type="button" class="botao botao-ouro" id="botao-salvar-semana" disabled>Salvar horários</button>
+        <button type="button" class="botao botao-contorno" id="botao-desfazer-semana" disabled>Desfazer mudanças</button>
+        <p id="semana-estado" role="status"></p>
+      </div>
+    </section>
+
+    <!-- Configurações -->
+    <section id="aba-config" role="tabpanel" aria-labelledby="tab-config" hidden>
+      <div class="titulo-aba">
+        <h2>Configurações</h2>
+      </div>
+
+      <form class="bloco" id="form-config">
+        <h3>Agendamento pelo site</h3>
+        <div class="campo campo-curto">
+          <label for="config-dias">Quantos dias à frente a agenda fica aberta</label>
+          <div class="com-unidade"><input id="config-dias" type="number" min="1" max="90" step="1" required><span>dias</span></div>
+        </div>
+        <div class="campo campo-curto">
+          <label for="config-antecedencia">Antecedência mínima para marcar pelo site</label>
+          <div class="com-unidade"><input id="config-antecedencia" type="number" min="0" max="72" step="1" required><span>horas</span></div>
+          <p class="ajuda">Com 2 horas, às 9:00 a paciente só consegue marcar a partir das 11:00.</p>
+        </div>
+        <button class="botao botao-ouro" type="submit">Salvar configurações</button>
+      </form>
+
+      <form class="bloco" id="form-senha" novalidate>
+        <h3>Senha do painel</h3>
+        <div class="campo campo-curto">
+          <label for="senha-atual">Senha atual</label>
+          <input id="senha-atual" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="campo campo-curto">
+          <label for="senha-nova">Nova senha</label>
+          <input id="senha-nova" type="password" autocomplete="new-password" minlength="8" required>
+          <p class="ajuda">Pelo menos 8 caracteres.</p>
+        </div>
+        <div class="campo campo-curto">
+          <label for="senha-repetir">Repita a nova senha</label>
+          <input id="senha-repetir" type="password" autocomplete="new-password" minlength="8" required>
+        </div>
+        <p class="erro" id="senha-erro" role="alert" hidden></p>
+        <button class="botao botao-ouro" type="submit">Trocar senha</button>
+      </form>
+    </section>
+
+  </main>
+</div>
+
+<!-- Marcar ou editar paciente -->
+<dialog id="dialogo-paciente" aria-labelledby="paciente-titulo">
+  <form id="form-paciente" novalidate>
+    <h2 id="paciente-titulo">Marcar paciente</h2>
+    <div class="campo">
+      <label for="paciente-nome">Nome da paciente</label>
+      <input id="paciente-nome" type="text" maxlength="80" autocomplete="off" required>
+    </div>
+    <div class="campo">
+      <label for="paciente-telefone">Telefone com DDD</label>
+      <input id="paciente-telefone" type="tel" inputmode="numeric" maxlength="16" placeholder="(83) 99999-9999" autocomplete="off" required>
+    </div>
+    <div class="campos-lado">
+      <div class="campo">
+        <label for="paciente-data">Dia</label>
+        <input id="paciente-data" type="date" required>
+      </div>
+      <div class="campo">
+        <label for="paciente-hora">Horário</label>
+        <input id="paciente-hora" type="time" required>
+      </div>
+    </div>
+    <p class="erro" id="paciente-erro" role="alert" hidden></p>
+    <div class="dialogo-acoes">
+      <button class="botao botao-ouro" type="submit" id="paciente-salvar">Salvar agendamento</button>
+      <button class="botao botao-contorno" type="button" id="paciente-cancelar">Voltar</button>
+    </div>
+  </form>
+</dialog>
+
+<!-- Ficha da paciente (respostas da conversa no site) -->
+<dialog id="dialogo-ficha" aria-labelledby="ficha-titulo">
+  <h2 id="ficha-titulo">Ficha da paciente</h2>
+  <p class="ficha-quem" id="ficha-quem"></p>
+  <div class="ficha-atencao" id="ficha-atencao" hidden>
+    <h3>Pontos de atenção</h3>
+    <ul id="ficha-atencao-lista"></ul>
+  </div>
+  <dl class="ficha-lista" id="ficha-lista"></dl>
+  <div class="dialogo-acoes">
+    <a class="botao botao-ouro" id="ficha-whats" href="#" target="_blank" rel="noopener">Abrir WhatsApp</a>
+    <button class="botao botao-contorno" type="button" id="ficha-fechar">Fechar</button>
+  </div>
+</dialog>
+
+<!-- Confirmar exclusão -->
+<dialog id="dialogo-excluir" aria-labelledby="excluir-titulo">
+  <h2 id="excluir-titulo">Excluir agendamento?</h2>
+  <p id="excluir-texto"></p>
+  <p>O horário volta a aparecer como livre no site.</p>
+  <div class="dialogo-acoes">
+    <button class="botao botao-perigo" type="button" id="excluir-confirmar">Excluir agendamento</button>
+    <button class="botao botao-contorno" type="button" id="excluir-cancelar">Manter agendamento</button>
+  </div>
+</dialog>
+
+<div class="recado" id="recado" role="status" aria-live="polite" hidden></div>
+
+<script src="admin.js" defer></script>
+</body>
+</html>

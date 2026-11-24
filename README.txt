@@ -72,6 +72,9 @@ Configurações
 
 Publicar na internet
 --------------------
+>>> Passo a passo completo para o Render: COLOCAR-NO-AR.md <<<
+    (a configuração do Render fica em render.yaml; a pasta deploy/ é para a alternativa com VPS)
+
 A agenda precisa de uma hospedagem que rode Node.js e mantenha a pasta dados/ gravada
 (por exemplo um VPS, Railway ou Render com disco persistente). Hospedagem só de
 arquivos (HTML estático) mostra o site, mas não faz o agendamento funcionar.

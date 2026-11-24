@@ -1,0 +1,32 @@
+# Serviço do Linux que mantém o site e a agenda sempre ligados no VPS.
+# Liga sozinho quando o servidor reinicia e volta sozinho se o programa cair.
+[Unit]
+Description=EL Saude e Estetica - site e agenda
+After=network.target
+
+[Service]
+Type=simple
+User=el
+Group=el
+WorkingDirectory=/home/el/site
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=3
+
+Environment=NODE_ENV=production
+Environment=PORT=3000
+# só o Nginx, na mesma máquina, conversa com o site
+Environment=HOST=127.0.0.1
+Environment=CONFIAR_PROXY=1
+# agendamentos e senha do painel ficam fora da pasta do site (o git nunca mexe neles)
+Environment=PASTA_DADOS=/home/el/dados
+
+# proteções: o programa só consegue gravar na pasta de dados
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/home/el/dados
+
+[Install]
+WantedBy=multi-user.target

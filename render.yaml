@@ -1,0 +1,34 @@
+# Configuração do Render ("Blueprint"): ao conectar este repositório no Render,
+# ele cria o serviço do site com a agenda e o disco onde os agendamentos ficam guardados.
+services:
+  - type: web
+    name: el-saude-estetica
+    runtime: node
+    # Starter (0.5 CPU, 512 MB): o plano pago mais barato. O gratuito não guarda os agendamentos.
+    plan: starter
+    # região mais próxima do Brasil entre as disponíveis
+    region: virginia
+    branch: master
+    # o projeto não usa bibliotecas externas; o npm install só confirma o package.json
+    buildCommand: npm install
+    startCommand: node server.js
+    # o Render confere por aqui se o site está no ar antes de liberar uma versão nova
+    healthCheckPath: /api/agenda
+    # publica sozinho a cada git push
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      # agendamentos e senha do painel ficam no disco (a única pasta que sobrevive às atualizações)
+      - key: PASTA_DADOS
+        value: /var/data
+      # o site fica atrás do balanceador do Render, que repassa o IP e o HTTPS
+      - key: CONFIAR_PROXY
+        value: "1"
+      # senha inicial do painel da Dra. Ericka: o Render pede no painel dele (mínimo 8 caracteres)
+      - key: SENHA_ADMIN
+        sync: false
+    disk:
+      name: dados
+      mountPath: /var/data
+      sizeGB: 1

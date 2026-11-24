@@ -18,6 +18,10 @@ const ARQUIVO = path.join(PASTA_DADOS, 'agenda.json');
 const ARQUIVO_SENHA = path.join(PASTA_DADOS, 'SENHA-INICIAL.txt');
 const FUSO = 'America/Fortaleza';
 const CONFIAR_PROXY = process.env.CONFIAR_PROXY === '1';
+// De onde tirar o IP do visitante quando há um proxy na frente (Nginx, Render...).
+// Vazio: X-Real-IP (Nginx) ou o último valor do X-Forwarded-For.
+// "x-forwarded-for": primeiro valor do X-Forwarded-For. Outro nome: usa esse cabeçalho.
+const CABECALHO_IP = (process.env.CABECALHO_IP || '').trim().toLowerCase();
 
 const DIAS_PASSADOS_NO_PAINEL = 14;
 const DIAS_FUTUROS_NO_PAINEL = 120;
@@ -209,7 +213,7 @@ function lerCookie(req, nome) {
 }
 
 function cookieDeSessao(req, valor, maxAgeSeg) {
-  const https = req.headers['x-forwarded-proto'] === 'https' || req.socket.encrypted;
+  const https = (CONFIAR_PROXY && req.headers['x-forwarded-proto'] === 'https') || req.socket.encrypted;
   return `sessao=${valor}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${maxAgeSeg}${https ? '; Secure' : ''}`;
 }
 
@@ -242,8 +246,20 @@ setInterval(() => {
 }, 10 * 60 * 1000).unref();
 
 function ipDe(req) {
-  if (CONFIAR_PROXY && req.headers['x-forwarded-for']) {
-    return String(req.headers['x-forwarded-for']).split(',')[0].trim();
+  if (CONFIAR_PROXY) {
+    if (CABECALHO_IP === 'x-forwarded-for') {
+      const primeiro = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+      if (primeiro) return primeiro;
+    } else if (CABECALHO_IP) {
+      const valor = String(req.headers[CABECALHO_IP] || '').split(',')[0].trim();
+      if (valor) return valor;
+    }
+    // O Nginx grava o IP verdadeiro em X-Real-IP. No X-Forwarded-For só o último valor
+    // é confiável: os primeiros podem ter sido inventados pelo próprio visitante.
+    const real = req.headers['x-real-ip'];
+    if (real) return String(real).trim();
+    const lista = String(req.headers['x-forwarded-for'] || '').split(',').map((v) => v.trim()).filter(Boolean);
+    if (lista.length) return lista[lista.length - 1];
   }
   return req.socket.remoteAddress || 'desconhecido';
 }
@@ -563,12 +579,18 @@ async function tratarApi(req, res, rota) {
   /* --- entrar e sair --- */
   if (rota === '/api/admin/login' && metodo === 'POST') {
     const chave = 'login:' + ipDe(req);
-    if (tentativasRecentes(chave, 15 * 60 * 1000).length >= 8) {
+    // Limite por IP e um limite geral: mesmo que alguém consiga disfarçar o IP,
+    // não dá para testar milhares de senhas.
+    if (
+      tentativasRecentes(chave, 15 * 60 * 1000).length >= 8 ||
+      tentativasRecentes('login:todos', 15 * 60 * 1000).length >= 40
+    ) {
       throw new Erro(429, 'Muitas tentativas. Aguarde 15 minutos e tente de novo.');
     }
     const corpo = await lerCorpo(req);
     if (!senhaConfere(corpo.senha)) {
       registrarTentativa(chave);
+      registrarTentativa('login:todos');
       throw new Erro(401, 'Senha incorreta.');
     }
     return responderJson(res, 200, painel(), {
@@ -589,6 +611,24 @@ async function tratarApi(req, res, rota) {
 
   if (rota === '/api/admin/painel' && metodo === 'GET') {
     return responderJson(res, 200, painel());
+  }
+
+  // Diagnóstico (só com login): mostra como a hospedagem informa o IP e o HTTPS,
+  // para escolher o valor certo de CABECALHO_IP.
+  if (rota === '/api/admin/diagnostico' && metodo === 'GET') {
+    const ver = (nome) => (req.headers[nome] === undefined ? null : String(req.headers[nome]));
+    return responderJson(res, 200, {
+      ipUsadoPeloSite: ipDe(req),
+      configuracao: { CONFIAR_PROXY, CABECALHO_IP: CABECALHO_IP || '(vazio)' },
+      cabecalhos: {
+        'x-forwarded-for': ver('x-forwarded-for'),
+        'x-real-ip': ver('x-real-ip'),
+        'true-client-ip': ver('true-client-ip'),
+        'cf-connecting-ip': ver('cf-connecting-ip'),
+        'x-forwarded-proto': ver('x-forwarded-proto'),
+      },
+      ipDaConexao: req.socket.remoteAddress,
+    });
   }
 
   if (rota === '/api/admin/agendamentos' && metodo === 'POST') {
@@ -723,7 +763,9 @@ const servidor = http.createServer(async (req, res) => {
 });
 
 carregar();
-servidor.listen(PORTA, () => {
+// No VPS: HOST=127.0.0.1, assim só o Nginx (na mesma máquina) fala com o servidor.
+const ENDERECO = process.env.HOST || '0.0.0.0';
+servidor.listen(PORTA, ENDERECO, () => {
   console.log(`Site:   http://localhost:${PORTA}`);
   console.log(`Painel: http://localhost:${PORTA}/admin`);
 });
